@@ -1,0 +1,96 @@
+version: 1
+disable_existing_loggers: False
+
+formatters:
+    simple:
+        format: "%(levelname)s: %(message)s"
+    super_simple:
+        format: "%(message)s"
+    simple_project:
+        format: "%(levelname)s: %(message)s"
+    detailed:
+        format: "%(asctime)s %(levelname)s %(name)s:%(message)s"
+
+handlers:
+    console_handler:
+        class: logging.StreamHandler
+        level: DEBUG
+        formatter: detailed
+        stream: ext://sys.stdout
+
+    error_file_handler:
+        class: logging.FileHandler
+        level: ERROR
+        formatter: detailed
+        filename: tool_errors.log
+#        maxBytes: 10485760
+#        backupCount: 20
+        mode: 'a'
+        encoding: utf8
+
+    tool_handler:  # this logger logs all event that goes on with the tools it a rotation handler
+        class: logging.FileHandler
+        level: NOTSET
+        formatter: simple
+        filename: tool.log
+        encoding: utf8
+#        maxBytes: 10485760
+#        backupCount: 20
+        mode: 'w'
+
+    scope_handler:
+        class: logging.FileHandler
+        level: NOTSET
+        formatter: simple
+        filename: "{name}.log"
+        encoding: utf8
+        mode: 'w'
+
+    verbose_handler:
+        class: logging.FileHandler
+        level: NOTSET
+        formatter: super_simple
+        filename: "{name}_verbose.log"
+        encoding: utf8
+        mode: 'w'
+
+#    root_dump_handler:
+#        class: logging.handlers.RotatingFileHandler
+#        level: NOTSET
+#        formatter: detailed
+#        filename: root.log
+#        maxBytes: 10485760
+#        backupCount: 20
+#        encoding: utf8
+#
+
+
+loggers:
+    # Reserve for debuging the module itself
+    tool:   # general automation related used for debugging and automation reporting
+        level: DEBUG
+        handlers: [tool_handler, error_file_handler]
+#        propagate: no
+
+    # reserve for reporting scope error
+    scope:   # this is used for all project reports
+        level: INFO
+        handlers: [scope_handler]
+#        propagate: no
+
+    # reserve for reporting commands that are sent/recieved from scope
+    verbose:   # this is used for all project reports
+        level: INFO
+        handlers: [verbose_handler]
+#        propagate: no
+
+#    dump:   # this is used for all project reports
+#        level: INFO
+#        handlers: [tool_handler, info_file_handler]
+#        propagate: no
+
+# this root logger will capture all loggers. including the loggers above. ie. test = logging.getLogger("tests")
+#root:
+#    level: ERROR
+#    handlers: [root_dump_handler, custom_info_file_handler]
+
